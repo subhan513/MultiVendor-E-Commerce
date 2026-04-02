@@ -1,0 +1,350 @@
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { backend_Url, server } from "../../server";
+import { useNavigate } from "react-router-dom";
+import socketIO from "socket.io-client";
+import {
+  ChatComposer,
+  ChatThreadHeader,
+  ConversationRow,
+  EmptyInboxIllustration,
+  MessageThread,
+  chatShell,
+  getAvatarUrl,
+} from "../Chat/ChatShared";
+import {
+  ConversationListSkeleton,
+  MessageThreadSkeleton,
+} from "../Chat/ChatSkeletons";
+
+const ENDPOINT = "http://localhost:4000/";
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+
+const DashboardMesssages = () => {
+  const [ArrivalMessage, setArrivalMessage] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [OnlineUsers, getOnlineUsers] = useState([]);
+  const [newMessage, setnewMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [currentChat, setCurrentChat] = useState(null);
+  const [conversations, setConversations] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [activeStatus, setActiveStatus] = useState(false);
+  const { seller } = useSelector((state) => state.seller);
+  const [userData, setUserData] = useState(null);
+  const [conversationsLoading, setConversationsLoading] = useState(false);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+
+  useEffect(() => {
+    socketId.on("getMessage", (data) => {
+      setArrivalMessage({
+        sender: data.senderId,
+        text: data.text,
+        createdAt: Date.now(),
+      });
+    });
+
+    return () => socketId.off("getMessage");
+  }, []);
+
+  useEffect(() => {
+    const registerUser = () => {
+      if (seller?._id) {
+        socketId.emit("addUser", seller._id);
+      }
+    };
+
+    socketId.on("connect", registerUser);
+    registerUser();
+
+    socketId.on("getUsers", (data) => {
+      getOnlineUsers(data);
+    });
+
+    return () => {
+      socketId.off("connect", registerUser);
+      socketId.off("getUsers");
+    };
+  }, [seller]);
+
+  const onlineCheck = (chat) => {
+    const chatMembers = chat.members.find((member) => member !== seller?._id);
+    const online = OnlineUsers?.find((u) => u.userId === chatMembers);
+    return online ? true : false;
+  };
+
+  useEffect(() => {
+    if (
+      ArrivalMessage &&
+      currentChat?.members.includes(ArrivalMessage.sender)
+    ) {
+      setMessages((prev) => [...prev, ArrivalMessage]);
+    }
+  }, [ArrivalMessage, currentChat]);
+
+  useEffect(() => {
+    if (seller?._id) {
+      setConversationsLoading(true);
+      axios
+        .get(
+          `${server}/conversation/get-all-conversation-seller/${seller._id}`,
+          {
+            withCredentials: true,
+          },
+        )
+        .then((res) => setConversations(res.data.conversations))
+        .catch(console.log)
+        .finally(() => setConversationsLoading(false));
+    }
+  }, [seller]);
+
+  useEffect(() => {
+    if (currentChat?._id) {
+      setMessagesLoading(true);
+      setMessages([]);
+      axios
+        .get(`${server}/message/get-all-messages/${currentChat._id}`)
+        .then((res) => setMessages(res.data.messages))
+        .catch(console.log)
+        .finally(() => setMessagesLoading(false));
+    } else {
+      setMessages([]);
+      setMessagesLoading(false);
+    }
+  }, [currentChat]);
+
+  const sendMessageHandler = async (e) => {
+    e.preventDefault();
+
+    if (!newMessage.trim() && !selectedImage) return;
+
+    const recieverId = currentChat.members.find(
+      (member) => member !== seller._id,
+    );
+
+    const formData = new FormData();
+    formData.append("sender", seller._id);
+    formData.append("text", newMessage);
+    formData.append("conversationId", currentChat._id);
+    if (selectedImage) {
+      formData.append("images", selectedImage);
+    }
+
+    socketId.emit("sendMessage", {
+      senderId: seller._id,
+      reciverId: recieverId,
+      text: newMessage || "Sent an image",
+    });
+
+    try {
+      const res = await axios.post(
+        `${server}/message/create-new-message`,
+        formData,
+      );
+
+      setMessages((prev) => [...prev, res.data.message]);
+      UpdateLastMessage();
+      setnewMessage("");
+      setSelectedImage(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const UpdateLastMessage = async () => {
+    const lastMessageText = newMessage.trim() || "Sent an image";
+    socketId.emit("updateLastMessage", {
+      lastMessage: lastMessageText,
+      LastMessageId: seller._id,
+    });
+
+    try {
+      await axios.put(
+        `${server}/conversation/update-last-message/${currentChat._id}`,
+        {
+          lastMessage: lastMessageText,
+          LastMessageId: seller._id,
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (!seller?._id) {
+    return (
+      <div className={chatShell.dashboardRoot}>
+        <EmptyInboxIllustration
+          title="Seller session required"
+          body="Sign in as a seller to view messages."
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={chatShell.dashboardRoot}>
+      {!open ? (
+        <>
+          <div className={chatShell.listHeader}>
+            <h1 className={chatShell.listTitle}>Inbox</h1>
+            <p className={chatShell.listSubtitle}>
+              Reply to customers in real time
+            </p>
+          </div>
+          <div className={chatShell.listScroll}>
+            {conversationsLoading ? (
+              <ConversationListSkeleton />
+            ) : conversations.length === 0 ? (
+              <EmptyInboxIllustration
+                title="No messages yet"
+                body="When a customer messages your shop, it will appear here."
+              />
+            ) : (
+              <div className="space-y-2 pb-2">
+                {conversations.map((item, index) => (
+                  <MessageList
+                    key={item._id || index}
+                    data={item}
+                    index={index}
+                    setOpen={setOpen}
+                    setCurrentChat={setCurrentChat}
+                    selectedConversationId={currentChat?._id}
+                    me={seller._id}
+                    onlineCheck={onlineCheck(item)}
+                    setActiveStatus={setActiveStatus}
+                    setUserData={setUserData}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <SellerInbox
+          onClose={() => {
+            setOpen(false);
+            setCurrentChat(null);
+            setUserData(null);
+          }}
+          newMessage={newMessage}
+          setnewMessage={setnewMessage}
+          sendMessageHandler={sendMessageHandler}
+          selectedImage={selectedImage}
+          setSelectedImage={setSelectedImage}
+          messages={messages}
+          messagesLoading={messagesLoading}
+          sellerId={seller._id}
+          userData={userData}
+          activeStatus={activeStatus}
+        />
+      )}
+    </div>
+  );
+};
+
+export const MessageList = ({
+  data,
+  index,
+  setOpen,
+  setCurrentChat,
+  selectedConversationId,
+  me,
+  onlineCheck,
+  setActiveStatus,
+  setUserData,
+}) => {
+  const navigate = useNavigate();
+  const [active, setactive] = useState(0);
+  const [peer, setPeer] = useState(null);
+
+  useEffect(() => {
+    const userId = data.members.find((m) => m !== me);
+
+    if (userId) {
+      axios
+        .get(`${server}/user/get-all-user-info/${userId}`)
+        .then((res) => setPeer(res.data.user))
+        .catch(console.log);
+    }
+  }, [data, me]);
+
+  useEffect(() => {
+    if (selectedConversationId === data._id && peer) {
+      setUserData(peer);
+    }
+  }, [peer, data._id, selectedConversationId, setUserData]);
+
+  const handleClick = () => {
+    setactive(index);
+    setOpen(true);
+    setCurrentChat(data);
+    setUserData(peer);
+    navigate(`?${data._id}`);
+    setActiveStatus(onlineCheck);
+  };
+
+  const sentByMe = data?.LastMessageId === me;
+  const peerFirst = (peer?.name || "Customer").split(" ")[0];
+  const snippet = (data?.lastMessage || "").slice(0, 72);
+  const preview = sentByMe
+    ? `You · ${snippet || "—"}`
+    : `${peerFirst} · ${snippet || "—"}`;
+
+  return (
+    <ConversationRow
+      active={active === index}
+      onClick={handleClick}
+      avatarUrl={getAvatarUrl(backend_Url, peer?.avatar)}
+      title={peer?.name}
+      preview={preview}
+      online={onlineCheck}
+      loadingTitle={!peer?.name}
+    />
+  );
+};
+
+const SellerInbox = ({
+  onClose,
+  newMessage,
+  setnewMessage,
+  sendMessageHandler,
+  selectedImage,
+  setSelectedImage,
+  messages,
+  messagesLoading,
+  sellerId,
+  userData,
+  activeStatus,
+}) => {
+  return (
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      <ChatThreadHeader
+        backendUrl={backend_Url}
+        userData={userData}
+        activeStatus={activeStatus}
+        onBack={onClose}
+        loading={!userData}
+      />
+      <MessageThread
+        messages={messages}
+        messagesLoading={messagesLoading}
+        selfId={sellerId}
+        backendUrl={backend_Url}
+        loadingSkeleton={<MessageThreadSkeleton />}
+      />
+      <ChatComposer
+        value={newMessage}
+        onChange={(e) => setnewMessage(e.target.value)}
+        onSubmit={sendMessageHandler}
+        onImageChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+        selectedImageName={selectedImage?.name}
+        selectedImagePreview={selectedImage}
+        clearSelectedImage={() => setSelectedImage(null)}
+      />
+    </div>
+  );
+};
+
+export default DashboardMesssages;
