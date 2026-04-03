@@ -22,12 +22,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://multi-vendor-e-commerce-zrmx.vercel.app",
   credentials: true
 }));
 
 // Static uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/', express.static(path.join(__dirname, './uploads')));
 
 // API routes
 app.use("/api/v2/payment", payment);
@@ -42,7 +42,7 @@ app.use("/api/v2/conversation", conversation);
 app.use("/api/v2/withdraw", withdraw);
 
 // Default route
-app.get("/", (req, res) => {
+app.get("/test", (req, res) => {
   res.send("Welcome to the Multi Vendor E-Commerce API");
 });
 
