@@ -1,5 +1,5 @@
  require("dotenv").config({
-    path: "Backend/config/.env",
+    path: "config/.env",
   });
 const express  = require('express');
 const cors = require("cors");
@@ -19,6 +19,9 @@ const withdraw = require('./controllers/withdraw.js');
 app.use(express.json());
 app.use(express.urlencoded({extended : true, limit : "50mb"}));
 app.use("/",express.static('uploads'))
+app.use('/',(req,res)=>{
+  res.send("Welcome to the Multi Vendor E-Commerce API")
+})
 app.use(cookieParser());
 app.use(cors({
   origin : "http://localhost:5173",

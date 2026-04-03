@@ -1,0 +1,9 @@
+Backend/config/.env
+Frontend/node_modules
+Backend/node_modules
+socket/node_modules
+
+npm-debug.log
+.DS_Store
+yarn-error.log
+yarn-debug.log
