@@ -50,7 +50,7 @@ router.post('/shop-create', upload.single('avatar'), async (req,res,next) => {
 
     const activationtoken = createActivationToken(seller)
 
-    const activationUrl = `http://localhost:5173/seller/activation/${activationtoken}`;
+    const activationUrl = `https://multi-vendor-e-commerce-zrmx.vercel.app/seller/activation/${activationtoken}`;
  try {
       await sendMail({
         email: seller.email,

@@ -42,7 +42,7 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
       avatar: fileUrl,
     };
     const activationToken = createActivationToken(user);
-    const activationUrl = `http://localhost:5173/activation/${activationToken}`;
+    const activationUrl = `https://multi-vendor-e-commerce-zrmx.vercel.app/activation/${activationToken}`;
 
     try {
       await sendMail({
