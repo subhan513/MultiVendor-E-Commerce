@@ -4,12 +4,13 @@ import { backend_Url, server } from "../../server";
 import styles from "../../styles/styles";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import store from "../../redux/store";
 import Loader from "../Layout/Loader";
 import { getAllProductsShop } from "../../redux/actions/product";
 
 const ShopInfo = ({isOwner}) => {
+  const navigate = useNavigate();
   const {seller} = useSelector((state)=>state.seller);
   const {products} = useSelector((state)=>state.product)
   const [data, setdata] = useState({})
@@ -27,15 +28,15 @@ const ShopInfo = ({isOwner}) => {
     })
   }, [id])
   const logoutHandler = async () =>{
-    console.log("Logout clicked");
     try {
       const {data} = await axios.get(`${server}/shop/shop-logout`,{
         withCredentials : true
       })
       toast.success(data.message);
-      window.location.reload(true);
+      store.dispatch({ type: "sellerLogout" });
+      navigate("/shop-login", { replace: true });
     } catch (error) {
-      toast.error("Failed to logout",error);
+      toast.error(error.response?.data?.message || "Failed to logout");
     }
   };
 

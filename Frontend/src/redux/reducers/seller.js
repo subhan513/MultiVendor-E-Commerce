@@ -37,5 +37,11 @@ export const sellerReducer = createReducer(initialState, (builder) => {
     })
     .addCase("clearErrors", (state) => {
       state.error = null;
+    })
+    .addCase("sellerLogout", (state) => {
+      state.loading = false;
+      state.isSeller = false;
+      state.seller = null;
+      state.error = null;
     });
 });

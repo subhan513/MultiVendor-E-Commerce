@@ -152,10 +152,12 @@ router.get(
   "/shop-logout",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const isProduction = process.env.NODE_ENV === "production";
       res.clearCookie("seller_token", {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        path: "/",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
       });
 
       return res.status(200).json({
