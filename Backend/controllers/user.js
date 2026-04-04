@@ -42,7 +42,10 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
       avatar: fileUrl,
     };
     const activationToken = createActivationToken(user);
-    const activationUrl = `https://multi-vendor-e-commerce-zrmx.vercel.app/activation/${activationToken}`;
+    const frontendUrl =
+      process.env.FRONTEND_URL ||
+      "https://multi-vendor-e-commerce-zrmx.vercel.app";
+    const activationUrl = `${frontendUrl}/activation/${activationToken}`;
 
     try {
       await sendMail({
@@ -155,9 +158,12 @@ router.get(
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      res.cookie("token", null, {
+      const isProduction = process.env.NODE_ENV === "production";
+      res.clearCookie("token", {
         expires: new Date(Date.now()),
         httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
       });
 
       res.status(200).json({
@@ -216,114 +222,133 @@ router.put(
         user,
       });
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
       return next(new ErrorHandler("Failed to Update the avatar", 500));
     }
   }),
 );
 
-
-router.put('/update-user-address',isAuthenticated, catchAsyncErrors(async (req,res,next) => {
-  try {
-    const user = await User.findById(req.user._id);
-    const sameAddressType = user.addresses.find(address=>address.addressType === req.body.addressType);
-    if(sameAddressType){
-      return next(new ErrorHandler(`${req.body.addressType} are Already Exists`))
+router.put(
+  "/update-user-address",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+      const sameAddressType = user.addresses.find(
+        (address) => address.addressType === req.body.addressType,
+      );
+      if (sameAddressType) {
+        return next(
+          new ErrorHandler(`${req.body.addressType} are Already Exists`),
+        );
+      }
+      const existsAddress = user.addresses.find(
+        (address) => address._id === req.body._id,
+      );
+      if (existsAddress) {
+        Object.assign(existsAddress, req.body);
+      } else {
+        // add the new addresses in array
+        user.addresses.push(req.body);
+      }
+      await user.save();
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler("Failed to Update the Addresses", 500));
     }
-    const existsAddress =user.addresses.find(address=>address._id === req.body._id);
-    if(existsAddress){
-      Object.assign(existsAddress,req.body);
+  }),
+);
+
+router.delete(
+  "/delete-user-address/:id",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return next(new ErrorHandler("User not Found", 400));
+      }
+      const addressId = req.params.id;
+
+      user.addresses = user.addresses.filter((address) => {
+        return address._id.toString() !== addressId;
+      });
+
+      await user.save();
+      res.status(200).json({
+        success: true,
+        message: "User Address Deleted Successfully",
+      });
+    } catch (error) {
+      next(new ErrorHandler("Somthing Went Wrong", 500));
     }
-    else {
-      // add the new addresses in array
-     user.addresses.push(req.body);
+  }),
+);
+
+router.put(
+  "/update-user-password",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+      const { OldPassword, NewPassword, ConfirmPassword } = req.body;
+      const OldPasswordValid = user.comparePassword(OldPassword);
+      if (!OldPasswordValid) {
+        return next(new ErrorHandler("Password Is Not Valid", 500));
+      }
+
+      if (NewPassword !== ConfirmPassword) {
+        return next(new ErrorHandler("Password is not Matched", 400));
+      }
+      user.password = NewPassword;
+      await user.save();
+      res.status(200).json({
+        success: true,
+        message: "Password Updated SuccessFully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler("Somthing went Wrong", 400));
     }
-    await user.save();
-    res.status(200).json({
-      success : true,
-      user
-    });
-  } catch (error) {
-    return next(new ErrorHandler("Failed to Update the Addresses", 500));
-  }
-}))
+  }),
+);
 
-
-router.delete('/delete-user-address/:id',isAuthenticated,catchAsyncErrors(async (req,res,next) => {
-  try {
-    const user = await User.findById(req.user._id);
-    if(!user){
-      return next(new ErrorHandler("User not Found",400));
-    };
-    const addressId = req.params.id;
-
-    user.addresses = user.addresses.filter((address)=>{
-      return address._id.toString() !== addressId;
-    })
-     
-    await user.save();
-  res.status(200).json({
-    success : true,
-    message : "User Address Deleted Successfully"
-  })
-  } catch (error) {
-    next(new ErrorHandler("Somthing Went Wrong", 500));
-  }
-}))
-
-
-router.put('/update-user-password',isAuthenticated, catchAsyncErrors(async (req,res,next) => {
-  try {
-    const user = await User.findById(req.user._id);
-    const {OldPassword,NewPassword,ConfirmPassword} = req.body;
-    const OldPasswordValid = user.comparePassword(OldPassword);
-    if(!OldPasswordValid){
-      return next(new ErrorHandler("Password Is Not Valid",500));
+router.get(
+  "/get-all-user-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.id);
+      res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
     }
+  }),
+);
 
-    if(NewPassword !== ConfirmPassword){
-      return next(new ErrorHandler("Password is not Matched",400));
+router.get(
+  "/admin-all-users",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const users = await User.find({}).sort({
+        createdAt: -1,
+      });
+
+      res.status(201).json({
+        success: true,
+        users,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
     }
-    user.password = NewPassword;
-    await user.save();
-    res.status(200).json({
-      success : true,
-      message : "Password Updated SuccessFully"
-    })
-  } catch (error) {
-    return next(new ErrorHandler("Somthing went Wrong",400)); 
-  }
-}))
-
-
-router.get('/get-all-user-info/:id',catchAsyncErrors(async (req,res,next) => {
-
-  try {
-    const user =await User.findById(req.params.id);
-    res.status(201).json({
-      success: true,
-      user
-    })
-  } catch (error) {
-    return next(new ErrorHandler(error.message,500))
-  }
-}))
-
-
-router.get('/admin-all-users',isAuthenticated,isAdmin("Admin"),catchAsyncErrors(async (req,res,next) => {
-  try {
-    const users = await User.find({}).sort({
-      createdAt : -1
-    })
-
-    res.status(201).json({
-      success : true,
-      users
-    })
-  } catch (error) {
-    return next(new ErrorHandler(error.message,500));
-  }
-}))
+  }),
+);
 
 router.delete(
   "/delete-user/:id",
@@ -335,7 +360,7 @@ router.delete(
 
       if (!user) {
         return next(
-          new ErrorHandler("User is not available with this id", 400)
+          new ErrorHandler("User is not available with this id", 400),
         );
       }
 
@@ -352,7 +377,7 @@ router.delete(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
-  })
+  }),
 );
 
 module.exports = router;

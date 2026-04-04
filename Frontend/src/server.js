@@ -1,4 +1,5 @@
-export const server = "https://multi-vendor-e-commerce-beta.vercel.app/api/v2";
+export const server =
+  import.meta.env.VITE_SERVER_URL || "http://localhost:8000/api/v2";
 
-
-export const backend_Url = "https://multi-vendor-e-commerce-beta.vercel.app/";
+export const backend_Url =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:8000/";
