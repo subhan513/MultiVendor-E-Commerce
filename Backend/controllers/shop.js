@@ -226,7 +226,7 @@ const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const ShopToken = require("../middleware/sendToken.js");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const { isSellerAuthenticated } = require("../middleware/auth");
+const { isSellerAuthenticated, isAdmin } = require("../middleware/auth");
 const { upload, uploadSingle, cloudinary } = require("../cloudinary");
 const Shop = require("../model/shop");
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -348,6 +348,8 @@ router.delete("/delete-seller/:id", async (req, res) => {
 
   res.json({ success: true });
 });
+
+
 router.put(
   "/update-payment-methods",
   isSellerAuthenticated,
