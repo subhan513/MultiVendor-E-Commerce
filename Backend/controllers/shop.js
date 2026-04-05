@@ -280,6 +280,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const ShopToken = require("../middleware/sendToken.js");
+const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const { isSellerAuthenticated } = require("../middleware/auth");
 const { upload, uploadSingle, cloudinary } = require("../cloudinary");
 const Shop = require("../model/shop");

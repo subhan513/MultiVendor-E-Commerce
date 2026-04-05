@@ -1,0 +1,18 @@
+[dotenv@17.2.3] injecting env (11) from config\.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+C:\Users\NABEEL KAMBOH\Desktop\Dev_Weekends\Multi-Vendor E-Commerce\Backend\node_modules\stripe\cjs\stripe.core.js:162
+                throw new Error('Neither apiKey nor config.authenticator provided');
+                ^
+
+Error: Neither apiKey nor config.authenticator provided
+    at Stripe._setAuthenticator (C:\Users\NABEEL KAMBOH\Desktop\Dev_Weekends\Multi-Vendor E-Commerce\Backend\node_modules\stripe\cjs\stripe.core.js:162:23)
+    at new Stripe (C:\Users\NABEEL KAMBOH\Desktop\Dev_Weekends\Multi-Vendor E-Commerce\Backend\node_modules\stripe\cjs\stripe.core.js:100:14)
+    at Stripe (C:\Users\NABEEL KAMBOH\Desktop\Dev_Weekends\Multi-Vendor E-Commerce\Backend\node_modules\stripe\cjs\stripe.core.js:56:20)
+    at Object.<anonymous> (C:\Users\NABEEL KAMBOH\Desktop\Dev_Weekends\Multi-Vendor E-Commerce\Backend\controllers\payment.js:4:33)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+
+Node.js v22.17.0
