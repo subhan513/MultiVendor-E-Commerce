@@ -61,25 +61,6 @@
 //     return next(new ErrorHandler(error.message, 400));
 //   }
 // });
-// router.post("/shop-login", async (req, res, next) => {
-//   try {
-//     const { email, password } = req.body;
-//     if (!email || !password) {
-//       return next(new ErrorHandler("Please Provide all the fields", 500));
-//     }
-//     const user = await Shop.findOne({ email }).select("+password");
-//     if (!user) {
-//       return next(
-//         new ErrorHandler("Shop is not registered with this email", 500),
-//       );
-//     }
-//     const isValidPassword = await user.comparePassword(password);
-//     if (!isValidPassword) {
-//       return next(new ErrorHandler("Password is Not Valid", 401));
-//     }
-//     ShopToken(user, 200, res);
-//   } catch (error) {}
-// });
 
 // router.get(
 //   "/getSeller",
@@ -216,8 +197,6 @@
 //   }),
 // );
 
-// //  Update Seller Withdraw Methods  -- sellers
-
 
 // module.exports = router;
 const express = require("express");
@@ -306,7 +285,25 @@ router.post(
     }
   }),
 );
-
+router.post("/shop-login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new ErrorHandler("Please Provide all the fields", 500));
+    }
+    const user = await Shop.findOne({ email }).select("+password");
+    if (!user) {
+      return next(
+        new ErrorHandler("Shop is not registered with this email", 500),
+      );
+    }
+    const isValidPassword = await user.comparePassword(password);
+    if (!isValidPassword) {
+      return next(new ErrorHandler("Password is Not Valid", 401));
+    }
+    ShopToken(user, 200, res);
+  } catch (error) {}
+});
 // UPDATE SHOP IMAGE
 router.put(
   "/update-shop-profile",
