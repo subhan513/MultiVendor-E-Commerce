@@ -1,26 +1,34 @@
-const cloudinary = require("cloudinary");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 
-// Configure Cloudinary
+// Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_SECRET_KEY,
 });
 
-// Create Storage for Multer
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "ecommerce_uploads", // optional folder name
-    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
-    resource_type: "auto",
-  },
-});
+// Multer memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-// Create upload middleware
-exports.upload = multer({ storage: storage });
+// Helper function to upload single file
+const uploadSingle = (file, folder = "ecommerce_uploads") => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: "auto" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    stream.end(file.buffer);
+  });
+};
 
-// Export cloudinary for direct uploads
-exports.cloudinary = cloudinary;
+// Helper function to upload multiple files
+const uploadMultiple = (files, folder = "ecommerce_uploads") => {
+  return Promise.all(files.map(file => uploadSingle(file, folder)));
+};
+
+module.exports = { upload, uploadSingle, uploadMultiple, cloudinary };
