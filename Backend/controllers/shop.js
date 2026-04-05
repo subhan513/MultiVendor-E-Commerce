@@ -61,29 +61,6 @@
 //     return next(new ErrorHandler(error.message, 400));
 //   }
 // });
-
-// router.get(
-//   "/shop-logout",
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const isProduction = process.env.NODE_ENV === "production";
-//       res.clearCookie("seller_token", {
-//         httpOnly: true,
-//         path: "/",
-//         secure: isProduction,
-//         sameSite: isProduction ? "none" : "lax",
-//       });
-
-//       return res.status(200).json({
-//         success: true,
-//         message: "Logout Successfully",
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   }),
-// );
-
 // router.get(
 //   "/get-shop-info/:id",
 //   catchAsyncErrors(async (req, res, next) => {
@@ -265,6 +242,8 @@ router.post(
     }
   }),
 );
+
+
 router.post("/shop-login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -284,7 +263,30 @@ router.post("/shop-login", async (req, res, next) => {
     ShopToken(user, 200, res);
   } catch (error) {}
 });
-// UPDATE SHOP IMAGE
+UPDATE SHOP IMAGE
+
+router.get(
+  "/shop-logout",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const isProduction = process.env.NODE_ENV === "production";
+      res.clearCookie("seller_token", {
+        httpOnly: true,
+        path: "/",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Logout Successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }),
+);
+
 router.put(
   "/update-shop-profile",
   isSellerAuthenticated,
