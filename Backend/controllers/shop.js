@@ -61,41 +61,6 @@
 //     return next(new ErrorHandler(error.message, 400));
 //   }
 // });
-
-// router.post(
-//   "/activation",
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const { activation_token } = req.body;
-//       const newSeller = jwt.verify(
-//         activation_token,
-//         process.env.ACTIVATION_SECRET,
-//       );
-//       if (!newSeller) {
-//         return next(new ErrorHandler("invalid Token", 400));
-//       }
-//       const { name, email, password, avatar, zipCode, address, phoneNumber } =
-//         newSeller;
-//       let seller = await Shop.findOne({ email });
-//       if (seller) {
-//         return next(new ErrorHandler("Seller Already exists", 500));
-//       }
-//       seller = await Shop.create({
-//         name,
-//         email,
-//         password,
-//         avatar,
-//         zipCode,
-//         address,
-//         phoneNumber,
-//       });
-//       ShopToken(seller, 201, res);
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }),
-// );
-
 // router.post("/shop-login", async (req, res, next) => {
 //   try {
 //     const { email, password } = req.body;
@@ -234,26 +199,6 @@
 //     }
 //   }),
 // );
-
-// router.get(
-//   "/getAllsellers",
-//   isAuthenticated,
-//   isAdmin("Admin"),
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const sellers = await Shop.find({}).sort({
-//         createdAt: -1,
-//       });
-//       res.status(201).json({
-//         success: true,
-//         sellers,
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   }),
-// );
-
 // router.delete(
 //   "/delete-seller/:id",
 //   isAuthenticated,
@@ -292,6 +237,8 @@ const createActivationToken = (seller) => {
   });
 };
 
+
+
 // CREATE SHOP
 router.post("/shop-create", upload.single("avatar"), async (req, res, next) => {
   try {
@@ -325,6 +272,40 @@ router.post("/shop-create", upload.single("avatar"), async (req, res, next) => {
     next(new ErrorHandler(err.message, 400));
   }
 });
+
+router.post(
+  "/activation",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { activation_token } = req.body;
+      const newSeller = jwt.verify(
+        activation_token,
+        process.env.ACTIVATION_SECRET,
+      );
+      if (!newSeller) {
+        return next(new ErrorHandler("invalid Token", 400));
+      }
+      const { name, email, password, avatar, zipCode, address, phoneNumber } =
+        newSeller;
+      let seller = await Shop.findOne({ email });
+      if (seller) {
+        return next(new ErrorHandler("Seller Already exists", 500));
+      }
+      seller = await Shop.create({
+        name,
+        email,
+        password,
+        avatar,
+        zipCode,
+        address,
+        phoneNumber,
+      });
+      ShopToken(seller, 201, res);
+    } catch (error) {
+      console.log(error);
+    }
+  }),
+);
 
 // UPDATE SHOP IMAGE
 router.put(
@@ -397,6 +378,26 @@ router.delete(
       res.status(201).json({
         success: true,
         message: "WithDraw Method Deleted Successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }),
+);
+
+
+router.get(
+  "/getAllsellers",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const sellers = await Shop.find({}).sort({
+        createdAt: -1,
+      });
+      res.status(201).json({
+        success: true,
+        sellers,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
