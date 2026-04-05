@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../model/product");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const { upload, cloudinary } = require("../cloudinary");
+const { upload, cloudinary, uploadMultiple } = require("../cloudinary");
 const Shop = require("../model/shop");
 const ErrorHandler = require("../utils/ErrorHandler");
 const {
@@ -21,10 +21,20 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler("Shop Not Found", 400));
       } else {
-        const images = req.files.map((file) => file.path); // Cloudinary URLs
-        const productData = req.body;
-        productData.images = images;
-        productData.shop = shop;
+        let images = [];
+
+        const results = await uploadMultiple(req.files,"ecommerce_uploads");
+        images = results.map((result)=>{
+          return {
+            public_id : result.public_id,
+            url : result.secure_url
+          }
+        })
+        const productData = {
+          ...req.body,
+          images,
+          shop
+        }
         const product = await Product.create(productData);
         res.status(201).json({
           success: true,
@@ -78,18 +88,11 @@ router.delete(
       if (!productData) {
         return next(new ErrorHandler("Product Not Found", 400));
       }
-      // Delete images from Cloudinary
-      productData.images.forEach(async (imageUrl) => {
-        try {
-          // Extract public_id from Cloudinary URL
-          const urlParts = imageUrl.split("/");
-          const publicIdWithExtension = urlParts[urlParts.length - 1];
-          const publicId = `ecommerce_uploads/${publicIdWithExtension.split(".")[0]}`;
-          await cloudinary.uploader.destroy(publicId);
-        } catch (error) {
-          console.log("Error deleting image from Cloudinary:", error);
+      for (const image of productData.images) {
+        if(image.public_id){
+        await cloudinary.uploader.destroy(image.public_id);
         }
-      });
+      }
       const product = await Product.findByIdAndDelete(req.params.id);
       res.status(200).json({
         success: true,

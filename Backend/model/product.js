@@ -27,10 +27,17 @@ originalPrice : {
     required : [true,"Please Enter Product Stock"],
     maxLength : [5,"Stock cannot exceed 5 characters"]
   },
-  images : [
+  images: [
     {
-      type : String,
-    }
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+    },
   ],
   shopId : {
     type : String,
