@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../model/product");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const { upload } = require("../multer");
+const { upload, cloudinary } = require("../cloudinary");
 const Shop = require("../model/shop");
 const ErrorHandler = require("../utils/ErrorHandler");
-const fs = require("fs");
 const {
   isSellerAuthenticated,
   isAuthenticated,
@@ -22,7 +21,7 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler("Shop Not Found", 400));
       } else {
-        const images = req.files.map((file) => `${file.filename}`);
+        const images = req.files.map((file) => file.path); // Cloudinary URLs
         const productData = req.body;
         productData.images = images;
         productData.shop = shop;
@@ -79,14 +78,17 @@ router.delete(
       if (!productData) {
         return next(new ErrorHandler("Product Not Found", 400));
       }
-      productData.images.forEach((imageUrl) => {
-        const filename = imageUrl;
-        const filePath = `uploads/${filename}`;
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
+      // Delete images from Cloudinary
+      productData.images.forEach(async (imageUrl) => {
+        try {
+          // Extract public_id from Cloudinary URL
+          const urlParts = imageUrl.split("/");
+          const publicIdWithExtension = urlParts[urlParts.length - 1];
+          const publicId = `ecommerce_uploads/${publicIdWithExtension.split(".")[0]}`;
+          await cloudinary.uploader.destroy(publicId);
+        } catch (error) {
+          console.log("Error deleting image from Cloudinary:", error);
+        }
       });
       const product = await Product.findByIdAndDelete(req.params.id);
       res.status(200).json({
@@ -105,9 +107,9 @@ router.put(
   catchAsyncErrors(async (req, res, next) => {
     const { user, rating, message, productId, orderId } = req.body;
     console.log(productId);
-  console.log("Received productId:", productId);
-const product = await Product.findById(productId);
-console.log("Found product:", productId);
+    console.log("Received productId:", productId);
+    const product = await Product.findById(productId);
+    console.log("Found product:", productId);
     if (!product) return next(new ErrorHandler("Product not found", 404));
 
     const review = { user, rating, message, productId };
@@ -131,7 +133,7 @@ console.log("Found product:", productId);
     product.ratings =
       product.reviews.reduce((acc, rev) => acc + rev.rating, 0) /
       product.reviews.length;
-      
+
     await product.save({ validateBeforeSave: false });
 
     // Update order cart item
@@ -164,6 +166,6 @@ router.get(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
-  })
+  }),
 );
 module.exports = router;

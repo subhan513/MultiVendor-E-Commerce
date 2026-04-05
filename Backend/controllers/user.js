@@ -1,11 +1,9 @@
 const express = require("express");
-const path = require("path");
 const User = require("../model/user.js");
-const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors.js");
 const ErrorHandler = require("../utils/ErrorHandler.js");
-const { upload } = require("../multer.js");
+const { upload, cloudinary } = require("../cloudinary.js");
 const sendMail = require("../utils/sendMail.js");
 const sendToken = require("../middleware/jwtToken.js");
 const { isAuthenticated, isAdmin } = require("../middleware/auth.js");
@@ -23,18 +21,9 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
     const { name, email, password } = req.body;
     const userEmail = await User.findOne({ email });
     if (userEmail) {
-      const filename = req.file.filename;
-      const filepath = `uploads/${filename}`;
-      fs.unlink(filepath, (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: "file deleted failed" });
-        }
-      });
       return next(new ErrorHandler("User already exists", 400));
     }
-    const filename = req.file.filename;
-    const fileUrl = path.join(filename);
+    const fileUrl = req.file.path; // Cloudinary URL
     const user = {
       name: name,
       email: email,
@@ -208,11 +197,7 @@ router.put(
   upload.single("image"),
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const ExistingUser = await User.findById(req.user._id);
-      const ExistingUserAvatarPath = `uploads/${ExistingUser.avatar}`;
-      fs.unlinkSync(ExistingUserAvatarPath);
-
-      const fileUrl = path.join(req.file.filename);
+      const fileUrl = req.file.path; // Cloudinary URL
       const user = await User.findByIdAndUpdate(req.user._id, {
         avatar: fileUrl,
       });

@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
@@ -9,11 +8,10 @@ const {
   isSellerAuthenticated,
   isAdmin,
 } = require("../middleware/auth");
-const { upload } = require("../multer");
+const { upload, cloudinary } = require("../cloudinary");
 const Shop = require("../model/shop");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
-const fs = require("fs");
 
 const createActivationToken = (seller) => {
   return jwt.sign(seller, process.env.ACTIVATION_SECRET, {
@@ -21,24 +19,14 @@ const createActivationToken = (seller) => {
   });
 };
 router.post("/shop-create", upload.single("avatar"), async (req, res, next) => {
-  console.log("FILE:", req.file.filename);
   try {
     const { email } = req.body;
     const SellerEmail = await Shop.findOne({ email });
     if (SellerEmail) {
-      const filename = req.file.filename;
-      const filepath = `uploads/${filename}`;
-      fs.unlink(filepath, (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: "file deleted failed" });
-        }
-      });
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const filename = req.file.filename;
-    const fileUrl = path.join(filename);
+    const fileUrl = req.file.path; // Cloudinary URL
 
     const seller = {
       name: req.body.name,
@@ -197,9 +185,7 @@ router.put(
       if (!existingShop) {
         return next(new ErrorHandler("Shop Not found", 400));
       }
-      const ExistingAvatarPath = `uploads/${existingShop.avatar}`;
-      fs.unlinkSync(ExistingAvatarPath);
-      const fileUrl = path.join(req.file.filename);
+      const fileUrl = req.file.path; // Cloudinary URL
       const shop = await Shop.findByIdAndUpdate(
         req.seller._id,
         {

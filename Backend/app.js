@@ -1,21 +1,21 @@
-const express = require('express');
+const express = require("express");
 const cors = require("cors");
-const cookieParser = require('cookie-parser');
-const path = require('path');
+const cookieParser = require("cookie-parser");
+const path = require("path");
 
 const app = express();
 
 // Controllers
-const user = require('./controllers/user.js');
-const shop = require('./controllers/shop.js');
-const product = require('./controllers/product.js');
-const event = require('./controllers/event.js');
-const couponCode = require('./controllers/couponCode.js');
-const payment = require('./controllers/payment.js');
-const order = require('./controllers/order.js');
-const conversation = require('./controllers/conversation.js');
-const message = require('./controllers/messages.js');
-const withdraw = require('./controllers/withdraw.js');
+const user = require("./controllers/user.js");
+const shop = require("./controllers/shop.js");
+const product = require("./controllers/product.js");
+const event = require("./controllers/event.js");
+const couponCode = require("./controllers/couponCode.js");
+const payment = require("./controllers/payment.js");
+const order = require("./controllers/order.js");
+const conversation = require("./controllers/conversation.js");
+const message = require("./controllers/messages.js");
+const withdraw = require("./controllers/withdraw.js");
 
 // Middlewares
 app.use(express.json());
@@ -27,23 +27,22 @@ const allowedOrigins = [
   "https://multi-vendor-e-commerce-zrmx.vercel.app",
   "https://multi-vendor-e-commerce-beta.vercel.app",
   "http://localhost:5173",
-  "http://localhost:3000"
+  "http://localhost:3000",
 ].filter(Boolean);
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS policy: Origin not allowed"));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200,
-}));
-
-// Static uploads
-app.use('/', express.static(path.join(__dirname, './uploads')));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS policy: Origin not allowed"));
+      }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200,
+  }),
+);
 
 // API routes
 app.use("/api/v2/payment", payment);
