@@ -56,6 +56,7 @@ export const deleteProduct = (id) =>async (dispatch) => {
       type : "deleteProductSuccess",
       payload : data.message
     })
+    dispatch(getAllProductsShop());
   } catch (error) {
     dispatch({
       type : "deleteProductFailure",

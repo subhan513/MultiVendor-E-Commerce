@@ -23,7 +23,6 @@ const AllProducts = () => {
     store.dispatch(deleteProduct(id));
     toast.success("Product Deleted Successfully");
     window.location.reload();
-
   };
 
   const columns = [
