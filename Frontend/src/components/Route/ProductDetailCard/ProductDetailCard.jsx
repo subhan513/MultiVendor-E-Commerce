@@ -100,7 +100,7 @@ const ProductDetailCard = ({ setopen, data }) => {
                 <img
                   src={
     data?.images?.length > 0
-      ? `${backend_Url}${data.images[0]}`
+      ? `${data.images[0].url}`
       : "https://via.placeholder.com/300"
   }
   alt=""
@@ -110,7 +110,7 @@ const ProductDetailCard = ({ setopen, data }) => {
                     <img
                       src={
     data?.images?.length > 0
-      ? `${backend_Url}${data.images[0]}`
+      ? `${data.images[0].url}`
       : "https://via.placeholder.com/300"
   }
   alt=""

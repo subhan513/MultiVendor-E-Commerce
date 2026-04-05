@@ -68,7 +68,7 @@ const ProductCard = ({data,isEvent}) => {
          className=' w-[90%] h-32 object-contain bg-cover bg-no-repeat'
         src={
     data?.images?.length > 0
-      ? `${backend_Url}${data.images[0]}`
+      ? `${data.images[0].url}`
       : "https://via.placeholder.com/300"
   }
   alt="" />
