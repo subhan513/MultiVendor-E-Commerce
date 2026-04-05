@@ -4,7 +4,7 @@ const router = express.Router();
 const Event = require("../model/event");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Shop = require("../model/shop");
-const { upload, cloudinary } = require("../cloudinary");
+const { upload, cloudinary, uploadMultiple } = require("../cloudinary");
 const {
   isSellerAuthenticated,
   isAdmin,
@@ -21,10 +21,19 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler("Shop Not Found", 400));
       } else {
-        const images = req.files.map((file) => file.path); // Cloudinary URLs
-        const eventData = req.body;
-        eventData.images = images;
-        eventData.shop = shop;
+        let images = [];
+        const results = await uploadMultiple(req.files,"ecommerce_uploads");
+        images = results.map((result)=>{
+          return {
+            public_id : result.public_id,
+            url : result.secure_url
+          }
+        })
+        const eventData = {
+          ...req.body,
+          images,
+          shop
+        };
         const event = await Event.create(eventData);
         res.status(201).json({
           success: true,
@@ -76,18 +85,11 @@ router.delete(
       if (!eventData) {
         return next(new ErrorHandler("Event is not found", 500));
       }
-      // Delete images from Cloudinary
-      eventData.images.forEach(async (imageUrl) => {
-        try {
-          // Extract public_id from Cloudinary URL
-          const urlParts = imageUrl.split("/");
-          const publicIdWithExtension = urlParts[urlParts.length - 1];
-          const publicId = `ecommerce_uploads/${publicIdWithExtension.split(".")[0]}`;
-          await cloudinary.uploader.destroy(publicId);
-        } catch (error) {
-          console.log("Error deleting image from Cloudinary:", error);
+      for (const  image of eventData.images) {
+        if(image.public_id){
+          await cloudinary.uploader.destroy(image.public_id);
         }
-      });
+      }
       const event = await Event.findByIdAndDelete(productId);
       res.status(200).json({
         message: "Event is deleted SuccessFully",
