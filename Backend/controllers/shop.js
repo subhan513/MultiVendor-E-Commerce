@@ -63,26 +63,6 @@
 // });
 
 // router.get(
-//   "/getSeller",
-//   isSellerAuthenticated,
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const seller = await Shop.findById(req.seller._id);
-//       if (!seller) {
-//         return next(new ErrorHandler("User does not Found", 400));
-//       }
-//       res.status(200).json({
-//         success: true,
-//         message: "Home Page",
-//         seller,
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   }),
-// );
-
-// router.get(
 //   "/shop-logout",
 //   catchAsyncErrors(async (req, res, next) => {
 //     try {
@@ -397,6 +377,25 @@ router.get(
       res.status(201).json({
         success: true,
         sellers,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }),
+);
+ router.get(
+  "/getSeller",
+  isSellerAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const seller = await Shop.findById(req.seller._id);
+      if (!seller) {
+        return next(new ErrorHandler("User does not Found", 400));
+      }
+      res.status(200).json({
+        success: true,
+        message: "Home Page",
+        seller,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
