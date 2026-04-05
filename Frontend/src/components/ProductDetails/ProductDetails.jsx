@@ -99,7 +99,7 @@ const handleMessageSubmit = async () =>{
   const totalReviewsLength = 
   products && products.reduce((acc,product)=>acc+product.reviews.length,0)
   const totalRatings = products && products.reduce((acc,product)=>acc + product.reviews.reduce((sum,review)=>sum + review.rating,0),0);
-  const avgRating = totalRatings / totalReviewsLength;
+  const avgRating = totalRatings / totalReviewsLength || 0;
   return (
     <div className="bg-white mt-10">
       {data && (
