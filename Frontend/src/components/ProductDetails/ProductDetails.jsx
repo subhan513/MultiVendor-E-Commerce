@@ -107,7 +107,7 @@ const handleMessageSubmit = async () =>{
           <div className="w-full md:flex block">
             <div className={`w-full md:w-[50%]`}>
               <img
-                src={`${data?.images[select]}`}
+                src={`${data?.images[select].url}`}
                 className="h-[200px] object-contain object-cover"
                 alt=""
               />
@@ -118,7 +118,7 @@ const handleMessageSubmit = async () =>{
                     return (
                     <div className={`${select === index ? "border border-gray-700 rounded" : ""}`}>
                          <img
-                    src={`${backend_Url}${i}`}
+                    src={`${i.url}`}
                     className={`h-[200px] object-contain`}
                     onClick={() => setSelect(index)}
                     alt=""
@@ -197,7 +197,7 @@ const handleMessageSubmit = async () =>{
                 </div>
                 <div className="flex items-center pt-5">
                <Link to={`/shop/preview/${data.shop._id}`}>
-                  <img src={` ${backend_Url}${data?.shop?.avatar}`} alt="" 
+                  <img src={`${data?.shop?.avatar.url}`} alt="" 
                    className="w-[50px] h-[50px] rounded-full mr-2"
                   />
                </Link>
