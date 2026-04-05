@@ -263,8 +263,6 @@ router.post("/shop-login", async (req, res, next) => {
     ShopToken(user, 200, res);
   } catch (error) {}
 });
-UPDATE SHOP IMAGE
-
 router.get(
   "/shop-logout",
   catchAsyncErrors(async (req, res, next) => {
