@@ -32,6 +32,7 @@ const ShopCreate = () => {
   try {
     const res = await axios.post(`${server}/shop/shop-create`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
+      withCredentials : true
     });
     toast.success(res.data.message);
     
