@@ -107,7 +107,7 @@ const handleMessageSubmit = async () =>{
           <div className="w-full md:flex block">
             <div className={`w-full md:w-[50%]`}>
               <img
-                src={`${backend_Url}${data?.images[select]}`}
+                src={`${data?.images[select]}`}
                 className="h-[200px] object-contain object-cover"
                 alt=""
               />
