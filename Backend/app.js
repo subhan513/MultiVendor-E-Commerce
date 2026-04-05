@@ -21,28 +21,10 @@ const withdraw = require("./controllers/withdraw.js");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.CLIENT_URL,
-  "https://multi-vendor-e-commerce-zrmx.vercel.app",
-  "https://multi-vendor-e-commerce-beta.vercel.app",
-  "http://localhost:5173",
-  "http://localhost:3000",
-].filter(Boolean);
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS policy: Origin not allowed"));
-      }
-    },
-    credentials: true,
-    optionsSuccessStatus: 200,
-  }),
-);
+app.use(cors({
+  origin: "https://multi-vendor-e-commerce-zrmx.vercel.app",
+  credentials: true
+}));
 
 // API routes
 app.use("/api/v2/payment", payment);
