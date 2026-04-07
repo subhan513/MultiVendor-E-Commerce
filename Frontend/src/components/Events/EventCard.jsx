@@ -33,7 +33,7 @@ const EventCard = ({ data }) => {
         className={`w-full block bg-white rounded-lg lg:flex p-2 mb-12 shadow-sm`}
       >
         <div className="w-full lg:w-[50%] ml-16 mt-12">
-          <img src={`$${data?.images[0].url}`} alt="" />
+          <img src={`$${data?.images[0]?.url}`} alt="" />
         </div>
         <div className="w-full lg:w-[50%] flex flex-col justify-center mr-4">
           <h2 className={`${styles.productTitle}`}>{data?.name}</h2>
