@@ -61,21 +61,6 @@
 //     return next(new ErrorHandler(error.message, 400));
 //   }
 // });
-// router.get(
-//   "/get-shop-info/:id",
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const shop = await Shop.findById(req.params.id);
-//       res.status(200).json({
-//         success: true,
-//         shop,
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler("Somthing Went Wrong", 500));
-//     }
-//   }),
-// );
-
 // // Update Shop Profile image
 
 // router.put(
@@ -402,4 +387,20 @@ router.get(
     }
   }),
 );
+
+router.get(
+  "/get-shop-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const shop = await Shop.findById(req.params.id);
+      res.status(200).json({
+        success: true,
+        shop,
+      });
+    } catch (error) {
+      return next(new ErrorHandler("Somthing Went Wrong", 500));
+    }
+  }),
+);
+
 module.exports = router;
