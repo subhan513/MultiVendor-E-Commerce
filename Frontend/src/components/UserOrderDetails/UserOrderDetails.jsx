@@ -129,7 +129,7 @@ const OrderDetails = () => {
             <br />
             <div className="w-full flex">
               <img
-                src={`${backend_Url}${selectedItem?.images[0]}`}
+                src={`${selectedItem?.images[0].url}`}
                 alt=""
                 className="w-[80px] h-[80px]"
               />
