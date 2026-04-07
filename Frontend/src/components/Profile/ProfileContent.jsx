@@ -80,7 +80,7 @@ const ProfileContent = ({ active }) => {
           <div className="flex justify-center w-full">
             <div className="relative mt-7">
               <img
-                src={`${backend_Url}${user?.avatar}`}
+                src={`${user?.avatar.url}`}
                 alt=""
                 className="w-[150px] h-[150px] rounded-full border-[3px] border-green-800 object-cover"
               />
