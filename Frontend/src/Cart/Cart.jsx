@@ -33,7 +33,7 @@ const Cart = ({setOpenCart}) => {
   },[])
   return (
     <div className=' fixed w-full h-screen top-0 left-0  z-10  bg-[#0000004b]'>
-      <div  ref={ref} className='fixed top-0 right-0 bg-white h-screen w-[65%] flex flex-col justify-between shadow-sm'>
+      <div  ref={ref} className='fixed top-0 right-0 bg-white h-screen md:w-[25%] w-[65%] flex flex-col justify-between shadow-sm'>
         <div>
           <div className='flex w-full justify-end pt-5 pr-5'>
             <RxCross1
