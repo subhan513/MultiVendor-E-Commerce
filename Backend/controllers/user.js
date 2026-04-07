@@ -237,34 +237,6 @@
 //     }
 //   }),
 // );
-
-// router.put(
-//   "/update-user-password",
-//   isAuthenticated,
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const user = await User.findById(req.user._id);
-//       const { OldPassword, NewPassword, ConfirmPassword } = req.body;
-//       const OldPasswordValid = user.comparePassword(OldPassword);
-//       if (!OldPasswordValid) {
-//         return next(new ErrorHandler("Password Is Not Valid", 500));
-//       }
-
-//       if (NewPassword !== ConfirmPassword) {
-//         return next(new ErrorHandler("Password is not Matched", 400));
-//       }
-//       user.password = NewPassword;
-//       await user.save();
-//       res.status(200).json({
-//         success: true,
-//         message: "Password Updated SuccessFully",
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler("Somthing went Wrong", 400));
-//     }
-//   }),
-// );
-
 // router.get(
 //   "/get-all-user-info/:id",
 //   catchAsyncErrors(async (req, res, next) => {
@@ -614,6 +586,33 @@ router.put(
       });
     } catch (error) {
       return next(new ErrorHandler("Failed to Update the Addresses", 500));
+    }
+  }),
+);
+
+router.put(
+  "/update-user-password",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+      const { OldPassword, NewPassword, ConfirmPassword } = req.body;
+      const OldPasswordValid = user.comparePassword(OldPassword);
+      if (!OldPasswordValid) {
+        return next(new ErrorHandler("Password Is Not Valid", 500));
+      }
+
+      if (NewPassword !== ConfirmPassword) {
+        return next(new ErrorHandler("Password is not Matched", 400));
+      }
+      user.password = NewPassword;
+      await user.save();
+      res.status(200).json({
+        success: true,
+        message: "Password Updated SuccessFully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler("Somthing went Wrong", 400));
     }
   }),
 );
