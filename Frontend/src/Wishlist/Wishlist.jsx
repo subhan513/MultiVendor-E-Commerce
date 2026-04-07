@@ -52,7 +52,7 @@ const Cart = ({setShowWishList}) => {
             size={25}
             />
             <h5 className='pl-2 text-[20px] font-[500]'>
-              3 Items
+             {wishlist && wishlist.length > 0 ? `My Wishlist (${wishlist.length})` : "My Wishlist"}
             </h5>
           </div>
           <br />
