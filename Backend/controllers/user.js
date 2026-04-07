@@ -212,31 +212,6 @@
 //     }
 //   }),
 // );
-// router.delete(
-//   "/delete-user-address/:id",
-//   isAuthenticated,
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const user = await User.findById(req.user._id);
-//       if (!user) {
-//         return next(new ErrorHandler("User not Found", 400));
-//       }
-//       const addressId = req.params.id;
-
-//       user.addresses = user.addresses.filter((address) => {
-//         return address._id.toString() !== addressId;
-//       });
-
-//       await user.save();
-//       res.status(200).json({
-//         success: true,
-//         message: "User Address Deleted Successfully",
-//       });
-//     } catch (error) {
-//       next(new ErrorHandler("Somthing Went Wrong", 500));
-//     }
-//   }),
-// );
 // router.get(
 //   "/get-all-user-info/:id",
 //   catchAsyncErrors(async (req, res, next) => {
@@ -617,4 +592,29 @@ router.put(
   }),
 );
 
+router.delete(
+  "/delete-user-address/:id",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return next(new ErrorHandler("User not Found", 400));
+      }
+      const addressId = req.params.id;
+
+      user.addresses = user.addresses.filter((address) => {
+        return address._id.toString() !== addressId;
+      });
+
+      await user.save();
+      res.status(200).json({
+        success: true,
+        message: "User Address Deleted Successfully",
+      });
+    } catch (error) {
+      next(new ErrorHandler("Somthing Went Wrong", 500));
+    }
+  }),
+);
 module.exports = router;
