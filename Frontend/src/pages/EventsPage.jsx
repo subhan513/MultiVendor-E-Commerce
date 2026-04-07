@@ -3,14 +3,14 @@ import EventCard from "../components/Events/EventCard";
 import Header from "../components/Layout/Header";
 import { useSelector } from "react-redux";
 const EventsPage = () => {
-  const {events}  = useSelector((state)=>state.events);
+  const {allevents}  = useSelector((state)=>state.events);
   return (
     <>
         <div>
           <Header activeHeading={4} />
         {
-          events.length  > 0 ?  (
-           events.map((item)=>(
+          allevents.length  > 0 ?  (
+           allevents.map((item)=>(
              <EventCard key={item._id} data={item}/>
            ))
           ): (
