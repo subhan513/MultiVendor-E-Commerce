@@ -111,7 +111,7 @@ const CartSingle = ({data,quantityChangeHandler}) =>{
             <HiOutlineMinus size={16} color='#7d879c'/>
           </div>
         </div>
-   <img src={`${data.images && data?.images[0].url}`}
+   <img src={`${data?.images && data?.images[0]?.url}`}
         className='w-[80px] h-[80px] ml-4'
         alt="" />
         <div className='pl-[5px]'>
