@@ -28,6 +28,7 @@ useEffect(()=>{
   if(success){
     toast.success("Product Created Successfully");
     navigate("/dashboard");
+    window.location.reload();
   }
 },[store.dispatch,error,success])
 const handleSubmit = (e) =>{
