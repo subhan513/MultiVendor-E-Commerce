@@ -26,9 +26,9 @@ const Cart = ({setOpenCart}) => {
         setOpenCart(false);
       }
     }
-    window.addEventListener("mousedown",handleClickOutline)
+    window.addEventListener("click",handleClickOutline)
     return () =>{
-      window.removeEventListener("mousedown",handleClickOutline)
+      window.removeEventListener("click",handleClickOutline)
     }
   },[])
   return (
@@ -70,6 +70,7 @@ const Cart = ({setOpenCart}) => {
           </Link>
         </div>
       </div>
+
     </div>
   )
 }
