@@ -283,7 +283,7 @@ const ProductDetailsInfo = ({data,products,avgRating,totalReviewsLength}) =>{
             data && data.reviews.map((item,index)=>{
               return <div className="w-full flex my-2">
                 <img
-                src={`${backend_Url}${item.user.avatar}`}
+                src={`${item.user.avatar.url}`}
                  className="w-[50px] h-[50px] rounded-full"
                 alt="" 
                 />
@@ -303,7 +303,7 @@ const ProductDetailsInfo = ({data,products,avgRating,totalReviewsLength}) =>{
         <div className="w-full display-block md:flex p-5 justify-between">
           <div className="w-full md:w-[50%]">
             <div className="flex items-center">
-              <img src={`${backend_Url}${data?.shop?.avatar}`} 
+              <img src={`${data?.shop?.avatar.url}`} 
               className="w-[50px] h-[50px] rounded-full"
               alt="" />
               <div className="pl-3">
