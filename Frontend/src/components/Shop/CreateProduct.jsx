@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom"
 import { categoriesData } from '../../static/data';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
 import store from "../../redux/store"
-import { createProduct } from '../../redux/actions/product';
+import { createProduct, getAllProducts } from '../../redux/actions/product';
 import { toast } from "react-toastify";
 import { useEffect } from 'react';
 const CreateProduct = () => {
@@ -45,6 +45,7 @@ const handleSubmit = (e) =>{
   newForm.append("stock",stock);
   newForm.append("shopId",seller._id);
   store.dispatch(createProduct(newForm));
+  store.dispatch(getAllProducts());
 }
 
 const handleimageChange = (e)=>{

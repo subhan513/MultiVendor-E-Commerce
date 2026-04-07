@@ -16,6 +16,7 @@ export const createProduct = (newForm)=> async (dispatch) => {
       type : "productCreateSuccess",
       payload : data.product
     })
+    dispatch(getAllProducts());
   }
   catch (error){
     dispatch({
