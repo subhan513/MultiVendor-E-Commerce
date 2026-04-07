@@ -179,6 +179,11 @@ const Header = ({ activeHeading }) => {
             <span className='absolute top-1 right-0.5 bg-green-700 rounded-full text-white px-1'>0</span>
           </div>
         </div>
+
+        {OpenCart ? <Cart setOpenCart={setOpenCart} /> : null}
+
+          {/* wishlist popup */}
+      {ShowWishList ? <Wishlist setShowWishList={setShowWishList} /> : null}
       </div>
       {open ? (
         <div className='fixed top-0 left-0 w-full z-20 h-full bg-[#0000005f]'>
@@ -239,7 +244,7 @@ const Header = ({ activeHeading }) => {
               {isAuthenticated ? (
                 <>
                   <Link to={"/profile"}>
-                    <img src={`${backend_Url}${user.avatar}`} className='w-[35px] h-[35px] rounded-full' alt="" />
+                    <img src={`${user.avatar.url}`} className='w-[35px] h-[35px] rounded-full' alt="" />
                   </Link>
                 </>
               ) : (
