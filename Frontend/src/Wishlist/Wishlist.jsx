@@ -77,7 +77,7 @@ const CartSingle = ({data,removefromWishlistHandler,addtoCartHandler}) =>{
         <RxCross1 className='cursor-pointer'
         onClick={()=>removefromWishlistHandler(data)}
         />
-   <img src={`${backend_Url}${data?.images[0]}`}
+   <img src={`${data?.images[0].url}`}
         className='w-[80px] h-[80px]'
         alt="" />
         <div className='pl-[5px]'>
