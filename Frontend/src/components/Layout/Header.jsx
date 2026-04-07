@@ -17,6 +17,7 @@ import { RxCross1 } from 'react-icons/rx'
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user)
   const { cartItems } = useSelector((state) => state.cart)
+  const {wishlist} = useSelector((state)=>state.wishlist)
   const { allProducts } = useSelector((state) => state.product)
   console.log(user);
 
@@ -120,7 +121,7 @@ const Header = ({ activeHeading }) => {
                 <AiOutlineHeart size={30}
                   onClick={() => setShowWishList(true)}
                   color='rgb(255 255 255 /83%)' />
-                <span className='absolute -top-1 -right-1 m-0 bg-green-500 rounded-full text-white px-1 text-sm'>0</span>
+                <span className='absolute -top-1 -right-1 m-0 bg-green-500 rounded-full text-white px-1 text-sm'> {wishlist && wishlist.length}</span>
               </div>
               <div className='relative'>
                 <AiOutlineShoppingCart size={30} color='rgb(255 255 255 /83%)'
