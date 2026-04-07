@@ -66,11 +66,7 @@ const ProductCard = ({data,isEvent}) => {
          <Link to={`${isEvent === true ? `/product/${data._id}?isEvents=true` : `/product/${data._id}`}`}>
         <img 
          className=' w-[90%] h-32 object-contain bg-cover bg-no-repeat'
-        src={
-    data?.images?.length > 0
-      ? `${data.images[0].url}`
-      : "https://via.placeholder.com/300"
-  }
+        src={`${data.images[0].url}`}
   alt="" />
         </Link>
         <Link to={`/shop/preview/${data.shop._id}`}>
