@@ -212,41 +212,6 @@
 //     }
 //   }),
 // );
-
-// router.put(
-//   "/update-user-address",
-//   isAuthenticated,
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const user = await User.findById(req.user._id);
-//       const sameAddressType = user.addresses.find(
-//         (address) => address.addressType === req.body.addressType,
-//       );
-//       if (sameAddressType) {
-//         return next(
-//           new ErrorHandler(`${req.body.addressType} are Already Exists`),
-//         );
-//       }
-//       const existsAddress = user.addresses.find(
-//         (address) => address._id === req.body._id,
-//       );
-//       if (existsAddress) {
-//         Object.assign(existsAddress, req.body);
-//       } else {
-//         // add the new addresses in array
-//         user.addresses.push(req.body);
-//       }
-//       await user.save();
-//       res.status(200).json({
-//         success: true,
-//         user,
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler("Failed to Update the Addresses", 500));
-//     }
-//   }),
-// );
-
 // router.delete(
 //   "/delete-user-address/:id",
 //   isAuthenticated,
@@ -619,5 +584,38 @@ router.delete(
   }),
 );
 
+router.put(
+  "/update-user-address",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+      const sameAddressType = user.addresses.find(
+        (address) => address.addressType === req.body.addressType,
+      );
+      if (sameAddressType) {
+        return next(
+          new ErrorHandler(`${req.body.addressType} are Already Exists`),
+        );
+      }
+      const existsAddress = user.addresses.find(
+        (address) => address._id === req.body._id,
+      );
+      if (existsAddress) {
+        Object.assign(existsAddress, req.body);
+      } else {
+        // add the new addresses in array
+        user.addresses.push(req.body);
+      }
+      await user.save();
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler("Failed to Update the Addresses", 500));
+    }
+  }),
+);
 
 module.exports = router;
