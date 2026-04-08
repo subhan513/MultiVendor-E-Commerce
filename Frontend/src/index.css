@@ -3,4 +3,10 @@
 html, body {
   scrollbar-width: hidden;
   background-color: rgba(255, 254, 254, 0.989);
+  overflow-x: hidden;
+}
+
+#root {
+  overflow-x: hidden;
+  width: 100%;
 }
