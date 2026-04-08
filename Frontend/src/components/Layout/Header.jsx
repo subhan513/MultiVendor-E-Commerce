@@ -176,7 +176,7 @@ const Header = ({ activeHeading }) => {
           </div>
           <div>
             <AiOutlineShoppingCart size={40} onClick={()=>setOpenCart(true)} />
-            <span className='absolute top-1 right-0.5 bg-green-700 rounded-full text-white px-1'>0</span>
+            <span className='absolute top-1 right-0.5 bg-green-700 rounded-full text-white px-1'>{cartItems && cartItems.length}</span>
           </div>
         </div>
 
@@ -229,7 +229,7 @@ const Header = ({ activeHeading }) => {
             <Navbar
               active={activeHeading} />
             <div className={`${styles.button} ml-1`}>
-              <Link to='/seller'>
+              <Link to='/dashboard'>
                 <h1 className='text-[#fff] flex items-center'>Become Seller <IoIosArrowForward className='ml-1' />
                 </h1>
               </Link>
