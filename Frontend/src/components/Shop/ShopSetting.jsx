@@ -69,7 +69,7 @@ const ShopSetting = () => {
         <div className="w-full flex items-center justify-center mb-8">
           <div className="relative">
             <img
-              src={avatar ? URL.createObjectURL(avatar) : `${backend_Url}${seller.avatar}`}
+              src={avatar ? URL.createObjectURL(avatar) : `${seller.avatar.url}`}
               className="w-[200px] h-[200px] rounded-full cursor-pointer object-cover"
               alt="Shop avatar"
             />

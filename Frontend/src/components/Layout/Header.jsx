@@ -189,7 +189,7 @@ const Header = ({ activeHeading }) => {
               <div>
                 <div className='relative mr-[15px]'>
                   <AiOutlineHeart size={30} className='mt-5 ml-3' />
-                  <span className='absolute -top-1 left-8 bg-green-600 text-white px-1 rounded-full'>0</span>
+                  <span className='absolute -top-1 left-8 bg-green-600 text-white px-1 rounded-full'>{wishlist && wishlist.length}</span>
                 </div>
               </div>
               <div >
