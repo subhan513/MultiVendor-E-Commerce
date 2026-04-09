@@ -306,7 +306,7 @@ router.post(
 
       const newUser = jwt.verify(
         activation_token,
-        process.env.ACTIVATION_SECRET
+        process.env.ACTIVATION_SECRET,
       );
 
       const { name, email, password, avatar } = newUser;
@@ -328,7 +328,7 @@ router.post(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
-  })
+  }),
 );
 
 // ================= LOGIN =================
@@ -354,7 +354,7 @@ router.post(
     }
 
     sendToken(user, 200, res);
-  })
+  }),
 );
 
 // ================= GET USER =================
@@ -372,7 +372,7 @@ router.get(
       success: true,
       user,
     });
-  })
+  }),
 );
 
 // ================= LOGOUT =================
@@ -384,17 +384,16 @@ router.get(
 
     res.clearCookie("token", {
       httpOnly: true,
+      path: "/",
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
-      expires: new Date(0),
-      path: "/",
     });
 
     res.status(200).json({
       success: true,
       message: "Logged Out",
     });
-  })
+  }),
 );
 
 // ================= UPDATE USER INFO =================
@@ -421,7 +420,7 @@ router.put(
     await user.save();
 
     res.status(200).json({ success: true, user });
-  })
+  }),
 );
 
 // ================= UPDATE AVATAR =================
@@ -454,7 +453,7 @@ router.put(
     } catch (error) {
       return next(new ErrorHandler("Avatar update failed", 500));
     }
-  })
+  }),
 );
 
 // ================= DELETE USER =================
@@ -480,7 +479,7 @@ router.delete(
       success: true,
       message: "User deleted",
     });
-  })
+  }),
 );
 router.get(
   "/admin-all-users",
