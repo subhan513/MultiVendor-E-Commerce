@@ -18,8 +18,7 @@ const ProfileSidebar = ({setActive,active}) => {
   const LoggedOuthandler = () =>{
     axios.get(`${server}/user/logout`,{withCredentials : true}).then((res)=>{
       toast.success(res.data.message);
-      store.dispatch(loadUser());
-      navigate('/login');
+      navigate('/login', { replace: true });
     }).catch((error)=>{
       toast.error(error.response.data.message);
     })
