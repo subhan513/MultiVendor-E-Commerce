@@ -147,7 +147,7 @@ const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const ShopToken = require("../middleware/sendToken.js");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const { isSellerAuthenticated,isAuthenticated, isAdmin } = require("../middleware/auth");
+const { isSellerAuthenticated, isAuthenticated, isAdmin } = require("../middleware/auth");
 const { upload, uploadSingle, cloudinary } = require("../cloudinary");
 const Shop = require("../model/shop");
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -246,22 +246,27 @@ router.post("/shop-login", async (req, res, next) => {
       return next(new ErrorHandler("Password is Not Valid", 401));
     }
     ShopToken(user, 200, res);
-  } catch (error) {}
+  } catch (error) { }
 });
 router.get(
   "/shop-logout",
   catchAsyncErrors(async (req, res, next) => {
-    res.cookie("seller_token", null, {
-      expires: new Date(Date.now()),
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    try {
+      const isProduction = process.env.NODE_ENV === "production";
+      res.clearCookie("seller_token", {
+        httpOnly: true,
+        path: "/",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+      });
 
-    return res.status(200).json({
-      success: true,
-      message: "Logout Successfully",
-    });
+      return res.status(200).json({
+        success: true,
+        message: "Logout Successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
   }),
 );
 
@@ -363,7 +368,7 @@ router.get(
     }
   }),
 );
- router.get(
+router.get(
   "/getSeller",
   isSellerAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
