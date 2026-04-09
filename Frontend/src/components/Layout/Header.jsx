@@ -65,6 +65,7 @@ const Header = ({ activeHeading }) => {
               className='h-[40px] w-full px-2 border-[#3957db] border-[2px] rounded-md cursor-pointer'
             />
             <AiOutlineSearch size={30} className='absolute right-2 top-1.5' />
+            {SearchTerm.length === 0 && Search === true && setSearch(false)}
             {SearchData && Search === true ? (
               <div className='absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4'>
                 {SearchData && SearchData.map((i, index) => {
