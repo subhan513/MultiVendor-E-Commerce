@@ -280,7 +280,7 @@ const ProductDetailsInfo = ({data,products,avgRating,totalReviewsLength}) =>{
       {active === 2 && (
         <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll">
           {
-            data && data.reviews.map((item,index)=>{
+            data && data.reviews?.map((item,index)=>{
               return <div className="w-full flex my-2">
                 <img
                 src={`${item.user?.avatar?.url}`}
