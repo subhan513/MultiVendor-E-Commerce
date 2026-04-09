@@ -387,6 +387,7 @@ router.get(
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       expires: new Date(0),
+      path: "/",
     });
 
     res.status(200).json({
