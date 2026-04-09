@@ -379,11 +379,12 @@ router.get(
 router.get(
   "/logout",
   catchAsyncErrors(async (req, res, next) => {
-    res.cookie("token", null, {
-      expires: new Date(Date.now()),
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
+  const isProduction = process.env.NODE_ENV === "production";
+    res.clearCookie("token", {
+       httpOnly: true,
+        path: "/",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
     });
     res.status(200).json({
       success: true,
