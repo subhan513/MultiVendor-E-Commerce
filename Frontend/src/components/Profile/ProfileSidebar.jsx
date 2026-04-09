@@ -9,6 +9,8 @@ import axios from "axios";
 import {server} from "../../server"
 import {toast} from "react-toastify"
 import { useSelector } from 'react-redux'
+import store from '../../redux/store'
+import { loadUser } from '../../redux/actions/user'
 
 const ProfileSidebar = ({setActive,active}) => {
   const navigate = useNavigate()
@@ -16,7 +18,7 @@ const ProfileSidebar = ({setActive,active}) => {
   const LoggedOuthandler = () =>{
     axios.get(`${server}/user/logout`,{withCredentials : true}).then((res)=>{
       toast.success(res.data.message);
-      window.location.reload(true);
+      store.dispatch(loadUser());
       navigate('/login');
     }).catch((error)=>{
       toast.error(error.response.data.message);
