@@ -27,11 +27,12 @@ const Header = ({ activeHeading }) => {
   const [dropdown, setdropdown] = useState(false);
   const [OpenCart, setOpenCart] = useState(false);
   const [ShowWishList, setShowWishList] = useState(false);
+  const [Search,setSearch] = useState(false); 
   const [open, setOpen] = useState(false)
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term)
-
+    setSearch(true);
     const filteredProducts = allProducts && allProducts.filter((product) => {
       return product.name.toLowerCase().includes(SearchTerm.toLowerCase())
     })
@@ -64,7 +65,7 @@ const Header = ({ activeHeading }) => {
               className='h-[40px] w-full px-2 border-[#3957db] border-[2px] rounded-md cursor-pointer'
             />
             <AiOutlineSearch size={30} className='absolute right-2 top-1.5' />
-            {SearchData && SearchData.length !== 0 ? (
+            {SearchData && Search === true ? (
               <div className='absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4'>
                 {SearchData && SearchData.map((i, index) => {
                   const d = i.name;
