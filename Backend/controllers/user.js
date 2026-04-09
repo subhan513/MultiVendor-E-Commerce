@@ -378,20 +378,16 @@ router.get(
 // ================= LOGOUT =================
 router.get(
   "/logout",
-  isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
-    const isProduction = process.env.NODE_ENV === "production";
-
-    res.clearCookie("token", {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
       httpOnly: true,
-      path: "/",
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+      sameSite: "none",
+      secure: true,
     });
-
     res.status(200).json({
       success: true,
-      message: "Logged Out",
+      message: "Logged Out Successfully!",
     });
   }),
 );

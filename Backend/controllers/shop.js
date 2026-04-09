@@ -251,22 +251,17 @@ router.post("/shop-login", async (req, res, next) => {
 router.get(
   "/shop-logout",
   catchAsyncErrors(async (req, res, next) => {
-    try {
-      const isProduction = process.env.NODE_ENV === "production";
-      res.clearCookie("seller_token", {
-        httpOnly: true,
-        path: "/",
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
-      });
+    res.cookie("seller_token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
 
-      return res.status(200).json({
-        success: true,
-        message: "Logout Successfully",
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
+    return res.status(200).json({
+      success: true,
+      message: "Logout Successfully",
+    });
   }),
 );
 
