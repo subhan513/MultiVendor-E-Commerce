@@ -283,7 +283,7 @@ const ProductDetailsInfo = ({data,products,avgRating,totalReviewsLength}) =>{
             data && data.reviews.map((item,index)=>{
               return <div className="w-full flex my-2">
                 <img
-                src={`${item.user.avatar.url}`}
+                src={`${item.user?.avatar?.url}`}
                  className="w-[50px] h-[50px] rounded-full"
                 alt="" 
                 />
