@@ -67,26 +67,34 @@ const ShopProfileData = ({ isOwner }) => {
           products.map((i, index) => {
             return <ProductCard data={i} key={index} />;
           })}
-        {active === 3 &&
-          allReviews.map((item) => {
-            return (
-              <div className="w-full flex my-3">
-                <img
-                  src={`${item.user?.avatar?.url}`}
-                  className="w-[50px] h-[50px] rounded-full"
-                  alt=""
-                />
-                <div className="pl-3">
-                  <div className="flex w-full items-center my-4">
-                    <h1>{item.user.name}</h1>
-                    <Ratings rating={item.rating} />
-                  </div>
-                  <p className="font-[400]">{item?.message}</p>
-                  <p className="text-[14px]">{"2 Days ago"}</p>
-                </div>
-              </div>
-            );
-          })}
+          {/* Reviews */}
+{active === 3 && (
+  <div className="w-full flex flex-col gap-5">
+    {allReviews &&
+      allReviews.map((item, index) => (
+        <div
+          key={index}
+          className="w-full flex gap-4 border-b pb-4"
+        >
+          <img
+            src={item.user?.avatar?.url}
+            className="w-[50px] h-[50px] rounded-full object-cover"
+            alt=""
+          />
+
+          <div className="flex-1">
+            <div className="flex flex-col md:flex-row md:items-center gap-2">
+              <h1 className="font-semibold">{item.user?.name}</h1>
+              <Ratings rating={item.rating} />
+            </div>
+
+            <p className="font-[400] mt-2">{item?.message}</p>
+            <p className="text-[14px] text-gray-500 mt-1">2 Days ago</p>
+          </div>
+        </div>
+      ))}
+  </div>
+)}
       </div>
 
               {active === 2 && (
