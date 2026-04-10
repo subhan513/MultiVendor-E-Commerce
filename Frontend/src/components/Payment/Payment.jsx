@@ -203,7 +203,7 @@ const PaymentInfo = ({
               <div className="w-[50%] pr-2">
                 <label className="block pb-2">Card Number</label>
                 <CardNumberElement
-                  className={`${styles.input} !h-[35px] !w-[955]`}
+                  className={`${styles.input} !h-[35px] !w-full`}
                   options={{
                     style: {
                       base: {
