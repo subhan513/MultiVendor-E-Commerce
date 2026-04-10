@@ -121,7 +121,7 @@ const ProductDetailCard = ({ setopen, data }) => {
                         {data.shop.name}
                       </h3>
                       <h5 className="pb-3 text-[15px] ">
-                        ({data.shop.ratings}) Ratings
+                        ({data?.ratings}) Ratings
                       </h5>
                     </div>
                   </Link>
