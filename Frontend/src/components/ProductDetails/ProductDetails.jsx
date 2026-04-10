@@ -196,8 +196,8 @@ const handleMessageSubmit = async () =>{
                   </span>
                 </div>
                 <div className="flex items-center pt-5">
-               <Link to={`/shop/preview/${data.shop._id}`}>
-                  <img src={`${data?.shop?.avatar.url}`} alt="" 
+               <Link to={`/shop/preview/${data?.shop?._id}`}>
+                  <img src={`${data?.shop?.avatar?.url}`} alt="" 
                    className="w-[50px] h-[50px] rounded-full mr-2"
                   />
                </Link>
