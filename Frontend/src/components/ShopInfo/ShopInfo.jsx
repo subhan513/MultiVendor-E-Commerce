@@ -17,7 +17,7 @@ const ShopInfo = ({isOwner}) => {
   const [loading, setloading] = useState(false);
   const {id} = useParams();
   useEffect(() => {
-    store.dispatch(getAllProductsShop(seller._id));
+    store.dispatch(getAllProductsShop(seller?._id));
     setloading(true);
     axios.get(`${server}/shop/get-shop-info/${id}`).then((res)=>{
       setdata(res.data.shop);

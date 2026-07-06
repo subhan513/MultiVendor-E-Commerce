@@ -69,13 +69,13 @@ const ProductCard = ({data,isEvent}) => {
         src={`${data.images[0].url}`}
   alt="" />
         </Link>
-        <Link to={`/shop/preview/${data.shop._id}`}>
+        <Link to={`/shop/preview/${data?.shop?._id}`}>
         <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
-        </Link>
         <Link to={`/product/${product_name}`}>
         <h4 className='pb-3 font-[500]'>
           {data.name.length > 40 ? data.name.slice(0,40) + "..." : data.name}
         </h4>
+         </Link>
         <div className='flex'>
           {
             data && <Ratings rating={data?.ratings}/>
